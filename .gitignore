@@ -1,0 +1,8 @@
+# Yalnizca kod, ayar ve dokumanlar. Satin alinan asset iceren Content girmez.
+/*
+!/.gitignore
+!/.gitattributes
+!/Source/
+!/Config/
+!/docs/
+!/SoulsLike.uproject
