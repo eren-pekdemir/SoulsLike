@@ -54,8 +54,8 @@ Seçim: sen izleyiciyi "stüdyolar, portföy" olarak belirledin; bu durumda A'y�
 
 | Konu | Karar | Neden |
 |---|---|---|
-| Oyuncu | Kadın Dark Knight, çift el kılıç, `TwoHand_Base` | Kalkan mesh'i yok; bu set saldırı, blok, parry, fatal ve roll içeriyor |
-| Boss | Erkek Dark Knight, faz 1 `TwoHand_Up` | Oyuncudan farklı duruş, ilk bakışta ayrışır |
+| Oyuncu | Erkek Dark Knight, çift el kılıç, `TwoHand_Base` | Kalkan mesh'i yok; bu set saldırı, blok, parry, fatal ve roll içeriyor |
+| Boss | Kadın Dark Knight, faz 1 `TwoHand_Up` | Oyuncudan farklı duruş, ilk bakışta ayrışır |
 | Normal düşman | Dark Knight parçalarından (miğfersiz, farklı materyal) varyant, `Enemy_Attack` seti | Yeni mesh alana kadar eksik kalmaz |
 | ASC yeri | Karakterin üstünde | Tek oyunculu, PlayerState'e gerek yok |
 | Lock-on | Kendi component'imiz | 5.8'de TargetingSystem hâlâ Experimental klasöründe ve beta |
@@ -146,7 +146,7 @@ Poise <= 0      -> Staggered, execution açık
 Health <= 0     -> Dead
 ```
 
-Blok, dodge, parry ve stagger tek yerde çözülür (`USLCombatComponent::ResolveHit`); sonuç `FSLHitResult` olarak döner. Kuralları saf fonksiyonlarda tut ki test edilebilsin.
+Blok, dodge, parry ve stagger tek yerde çözülür (`USLCombatComponent::ResolveHit`); sonuç `FSLHitResult` olarak döner. Kuralları tek fonksiyonda topla ki okunması kolay olsun.
 
 Yön: vuruşun geldiği açı Front/Back/Left/Right'a ayrılır; `Hit_F/B/L/R` seçilir. Poise kırılınca `Hit_F_Down` gibi büyük tepkiler. Poise, 4 sn vurulmayınca dolar.
 
@@ -212,7 +212,7 @@ M0'da iskelet kararı: önce Compatible Skeletons. Kol/kılıç kayarsa IK Retar
 
 ## 9. Test
 
-Saf kurallar için Automation test: hit çözümleme sırası, stamina kuralı, yön hesabı, combo geçişi, boss saldırı ağırlığı. Animasyon ve his elle test edilir. Her kilometre taşında 30 sn'lik kısa kayıt al; gelişim videosu portföyde işe yarar.
+Otomatik test yok (kullanıcı kararı, 2026-11-25). Her şey oyun içinde denenir. Her kilometre taşında 30 sn\'lik kısa kayıt alınır.
 
 ## 10. Riskler
 

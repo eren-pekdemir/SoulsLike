@@ -23,6 +23,8 @@
 | Mesafeler | `Attack_A_1` 168 cm, `Roll_F` 476 cm | M0 kontrol değeri |
 | `_Combo` | `A_2_Combo` idle'dan farklı, `A_2` idle'a yakın başlıyor (tek kemik bakıldı) | Varsayım güçlendi, gözle bak |
 
+> **Karar (2026-11-25):** Otomatik test yazılmayacak; her adım oyun içinde denenerek doğrulanır. Aşağıdaki test adımlarını ve `SLLocomotionMath` / `ClampMoveInput` ayrımını atla. Yöne göre hız, lock-on ile birlikte karakterin içinde yazılır. Serbest harekette hız sabit 490.
+
 ## Global kurallar
 - Önek `SL`; kendi asset'lerin `Content/SoulsLike/` altında; satın alınan klasörlerdeki asset'leri değiştirme (Görev 2'deki iskelet ayarı tek istisna).
 - `Content/` git'e girmez; yedeği ayrıca alınır (yöntem kararı açık).
@@ -83,17 +85,17 @@ Komutlar (PowerShell, proje kökünde; editör kapalıyken):
 
 ### Görev 2: İskelet kapısı (M0, kod yok)
 
-Bu görev geçmeden 3'e başlama; burada çıkan sorun her şeyi etkiler. Karar (2026-11-25): oyuncu kadın, boss erkek. Riskli taraf kadın iskelet olduğu için önce o test edilir.
+Bu görev geçmeden 3'e başlama; burada çıkan sorun her şeyi etkiler. Karar (2026-11-25, güncel): oyuncu erkek, boss kadın. Kadın iskelet boss aşamasında (M6) test edilir.
 
-- [ ] `SK_DKF_Full` (oyuncu) iskeletinde Retarget Manager > Manage Compatible Skeletons listesine `SKM_Manny_Skeleton` ekle.
-- [ ] Translation Retargeting: root `Animation`, pelvis `Animation Scaled`, kalanlar `Skeleton`.
-- [ ] `hand_r` altına `WeaponSocket_R`: konum (−1,16, 1,32, −0,52), dönüş roll −11,6 / pitch 15,8 / yaw −8,5. `SM_DKF_Sword` önizlemesi ekle; kabza avuca oturana kadar dönüşü düzelt.
-- [ ] `AS_2Hand_Base_Attack_A_1`'i `Content/SoulsLike/Animations/Player/` altına kopyala, kopyada `EnableRootMotion` aç, montage üret.
-- [ ] Geçici bir Character BP'de mesh yaw −90, montage'ı Play Anim Montage ile oynat.
-- [ ] Aynı kontrolü `SK_DKM_Full` (boss) ile yap; ölçümlere göre sorunsuz geçmesi beklenir, kadınla karşılaştırma referansın da bu olur.
+- [x] `SK_DKM_Full` (oyuncu) iskeletinde Retarget Manager > Manage Compatible Skeletons listesine `SKM_Manny_Skeleton` ekle.
+- [x] Translation Retargeting: root `Animation`, pelvis `Animation Scaled`, kalanlar `Skeleton`.
+- [x] `hand_r` altına `WeaponSocket_R`: konum (−1,16, 1,32, −0,52), dönüş roll −11,6 / pitch 15,8 / yaw −8,5. `SM_DKM_Sword` önizlemesi ekle; kabza avuca oturana kadar dönüşü düzelt.
+- [x] `AS_2Hand_Base_Attack_A_1`'i `Content/SoulsLike/Animations/Player/` altına kopyala, kopyada `EnableRootMotion` aç, montage üret.
+- [x] Geçici bir Character BP'de mesh yaw −90, montage'ı Play Anim Montage ile oynat.
+- [ ] (M6) Aynı kontrolü `SK_DKF_Full` (boss) ile yap.
 
 **Geçti sayılır:** karakter ~168 cm ilerliyor; sol el kabzada; ayak zemine batmıyor; omuz/kol bozulmuyor.
-**Kadın iskelet testi geçemezse, sırayla:** (1) yalnızca sol el kayıyorsa AnimBP'de sol el IK (kabza ucuna socket); (2) omuz, kalça veya ayak bozuksa IK Retargeter (Manny -> DKF), sadece kullanılan klipler; (3) retarget sonrası kılıç yolu bozulursa Görev 3'e geçmeden Claude ile konuş. Retarget seçilirse oyuncu klipleri `Content/SoulsLike/Animations/Player/` altına üretilir, root motion orada açılır ve ~168 cm ölçütü bacak oranına göre biraz değişebilir.
+**(M6) Kadın iskelet testi geçemezse, sırayla:** (1) yalnızca sol el kayıyorsa AnimBP'de sol el IK (kabza ucuna socket); (2) omuz, kalça veya ayak bozuksa IK Retargeter (Manny -> DKF), sadece kullanılan klipler; (3) retarget sonrası kılıç yolu bozulursa Claude ile konuş. Retarget seçilirse boss klipleri `Content/SoulsLike/Animations/Boss/` altına üretilir, root motion orada açılır ve ~168 cm ölçütü bacak oranına göre biraz değişebilir.
 
 ### Görev 3: Hareket matematiği ve oyuncu karakteri (M1)
 
