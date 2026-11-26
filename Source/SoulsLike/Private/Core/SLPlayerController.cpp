@@ -4,6 +4,7 @@
 #include "Public/Core/SLPlayerController.h"
 
 #include "EnhancedInputSubsystems.h"
+#include "Engine/LocalPlayer.h"
 
 void ASLPlayerController::BeginPlay()
 {

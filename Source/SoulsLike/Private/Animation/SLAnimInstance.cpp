@@ -4,6 +4,7 @@
 #include "Public/Animation/SLAnimInstance.h"
 
 #include "KismetAnimationLibrary.h"
+#include "Characters/SLCharacterBase.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -21,5 +22,8 @@ void USLAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	bIsMoving = GroundSpeed > 3.f;
 	
 	bIsFalling = Character->GetCharacterMovement()->IsFalling();
+	
+	ASLCharacterBase* CharacterBase = Cast<ASLCharacterBase>(Character);
+	bIsStrafing = CharacterBase && CharacterBase->IsStrafing();
 	
 }

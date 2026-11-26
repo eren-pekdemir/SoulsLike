@@ -30,4 +30,8 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	bool bIsFalling = false;
 	
+	UPROPERTY(BlueprintReadOnly, Category = "Movement")
+	bool bIsStrafing = false;
+	
+	
 };

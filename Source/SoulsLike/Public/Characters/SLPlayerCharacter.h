@@ -21,7 +21,7 @@ public:
 	// Sets default values for this character's properties
 	ASLPlayerCharacter();
 	
-
+	bool IsStrafing() const override;
 
 protected:
 	// Called when the game starts or when spawned
@@ -57,5 +57,7 @@ protected:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void LockOn(const FInputActionValue& Value);
-	
+
+	void HandleLockOnChanged(AActor* NewTarget);
+
 };

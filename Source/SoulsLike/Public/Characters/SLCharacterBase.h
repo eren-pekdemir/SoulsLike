@@ -14,6 +14,8 @@ class SOULSLIKE_API ASLCharacterBase : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ASLCharacterBase();
+	
+	virtual bool IsStrafing() const { return false; }
 
 protected:
 	// Called when the game starts or when spawned
@@ -21,6 +23,8 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 	TObjectPtr<UStaticMeshComponent> WeaponMesh;
+	
+	
 
 
 };
