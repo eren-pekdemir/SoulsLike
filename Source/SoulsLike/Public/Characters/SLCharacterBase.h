@@ -3,11 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 #include "SLCharacterBase.generated.h"
 
+
+class USLAttributeSet;
+class UGameplayAbility;
+class UGameplayEffect;
+
 UCLASS(Abstract)
-class SOULSLIKE_API ASLCharacterBase : public ACharacter
+class SOULSLIKE_API ASLCharacterBase : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -23,6 +29,20 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 	TObjectPtr<UStaticMeshComponent> WeaponMesh;
+	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UAbilitySystemComponent> AbilitySystem;
+	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USLAttributeSet> Attributes;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
+	TArray<TSubclassOf<UGameplayEffect>> StartupEffects;
+	
+	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	
 	
 

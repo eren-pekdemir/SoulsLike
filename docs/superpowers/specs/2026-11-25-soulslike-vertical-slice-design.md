@@ -1,6 +1,8 @@
 # SoulsLike Vertical Slice: Tasarım
 
 Tarih: 2026-11-25. Durum: **onaylandı (2026-11-25)**.
+> **2026-11-26:** Dövüş ve yapay zekâ bölümleri `2026-11-26-combat-design.md` ile değiştirildi (onaylandı).
+
 Etiketler: **[Senin]** = senin söylediğin, **[Öneri]** = benim kararım, itiraz edebilirsin, **[Doğrula]** = editörde bakılması gereken varsayım.
 
 ## 1. Amaç

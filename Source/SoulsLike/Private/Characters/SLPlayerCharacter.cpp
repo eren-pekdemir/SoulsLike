@@ -3,6 +3,8 @@
 
 #include "Public/Characters/SLPlayerCharacter.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 #include "EnhancedInputComponent.h"
 #include "KismetAnimationLibrary.h"
 #include "Camera/CameraComponent.h"
@@ -82,6 +84,8 @@ void ASLPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EIC->BindAction(MoveAction , ETriggerEvent::Triggered, this, &ASLPlayerCharacter::Move);
 		EIC->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASLPlayerCharacter::Look);
 		EIC->BindAction(LockOnAction, ETriggerEvent::Started, this, &ASLPlayerCharacter::LockOn);
+		EIC->BindAction(LightAttackAction, ETriggerEvent::Started, this, &ASLPlayerCharacter::LightAttack);
+		EIC->BindAction(HeavyAttackAction, ETriggerEvent::Started, this, &ASLPlayerCharacter::HeavyAttack);
 	}
 }
 
@@ -109,6 +113,22 @@ void ASLPlayerCharacter::Look(const FInputActionValue& Value)
 void ASLPlayerCharacter::LockOn(const FInputActionValue& Value)
 {
 	LockComponent->ToggleLockOn();
+}
+
+void ASLPlayerCharacter::LightAttack(const FInputActionValue& Value)
+{
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+		this, FGameplayTag::RequestGameplayTag(TEXT("Event.Input.LightAttack")), FGameplayEventData());
+
+	GetAbilitySystemComponent()->TryActivateAbilityByClass(LightAttackAbility);
+}
+
+void ASLPlayerCharacter::HeavyAttack(const FInputActionValue& Value)
+{
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+		this, FGameplayTag::RequestGameplayTag(TEXT("Event.Input.HeavyAttack")), FGameplayEventData());
+
+	GetAbilitySystemComponent()->TryActivateAbilityByClass(HeavyAttackAbility);
 }
 
 void ASLPlayerCharacter::HandleLockOnChanged(AActor* NewTarget)

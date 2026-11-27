@@ -11,6 +11,7 @@ class USpringArmComponent;
 class UInputAction;
 struct FInputActionValue;
 class USLLockOnComponent;
+class UGameplayAbility;
 
 UCLASS()
 class SOULSLIKE_API ASLPlayerCharacter : public ASLCharacterBase
@@ -54,9 +55,23 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> LockOnAction;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> LightAttackAction;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Attack")
+	TSubclassOf<UGameplayAbility> LightAttackAbility;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> HeavyAttackAction;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Attack")
+	TSubclassOf<UGameplayAbility> HeavyAttackAbility;
+	
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void LockOn(const FInputActionValue& Value);
+	void LightAttack(const FInputActionValue& Value);
+	void HeavyAttack(const FInputActionValue& Value);
 
 	void HandleLockOnChanged(AActor* NewTarget);
 
