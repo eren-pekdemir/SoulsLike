@@ -13,6 +13,8 @@
 #include "Combat/SLCombatComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "AbilitySystemBlueprintLibrary.h"
+#include "Combat/SLHitDirection.h"
 
 
 // Sets default values
@@ -37,8 +39,15 @@ void ASLCharacterBase::HandleDamage(float Damage, AActor* DamageInstigator)
 	
 	if (Attributes->GetHealth() <= 0.0f)
 	{
-		if (!IsDead()) Die();
+		if (!IsDead()) Die(DamageInstigator);
+		return;   // ölen karaktere sarsılma event'i gitmesin
 	}
+
+	// GA_HitReact bu event'le kendiliğinden başlar (yeteneğin trigger'ı)
+	FGameplayEventData Payload;
+	Payload.Instigator = DamageInstigator;
+	Payload.EventMagnitude = Damage;
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, SLGameplayTags::Event_HitReact, Payload);
 }
 
 bool ASLCharacterBase::IsDead() const
@@ -77,11 +86,24 @@ UAbilitySystemComponent* ASLCharacterBase::GetAbilitySystemComponent() const
 	return AbilitySystem;
 }
 
-void ASLCharacterBase::Die()
+void ASLCharacterBase::Die(AActor* Killer)
 {
+	AbilitySystem->CancelAllAbilities();
+
 	AbilitySystem->AddLooseGameplayTag(SLGameplayTags::State_Dead);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCharacterMovement()->DisableMovement();
+
+	const ESLHitDirection Direction = SLCombat::GetHitDirection(this, Killer);
+	if (UAnimMontage* DeathMontage = SLCombat::PickMontage(Direction,
+		DeathFrontMontages, DeathBackMontages, DeathLeftMontages, DeathRightMontages))
+	{
+		// Montajda "Enable Auto Blend Out" kapalı olmalı, yoksa ölü ayağa kalkar
+		PlayAnimMontage(DeathMontage);
+		return;
+	}
+
+	// Ölüm montajı atanmamışsa yedek: ragdoll
 	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
 	GetMesh()->SetSimulatePhysics(true);
-	GetCharacterMovement()->DisableMovement();
 }

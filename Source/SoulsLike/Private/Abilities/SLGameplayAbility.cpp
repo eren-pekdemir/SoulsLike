@@ -19,6 +19,7 @@ bool USLGameplayAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Han
 	FGameplayTagContainer BusyTags;
 	BusyTags.AddTag(SLGameplayTags::State_Attacking);
 	BusyTags.AddTag(SLGameplayTags::State_Dodging);
+	BusyTags.AddTag(SLGameplayTags::State_HitReact);
 
 	const bool bBusy = ASC->HasAnyMatchingGameplayTags(BusyTags);
 

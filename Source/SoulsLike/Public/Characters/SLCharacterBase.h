@@ -53,7 +53,20 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USLCombatComponent> Combat;
 	
-	virtual void Die();
+	virtual void Die(AActor* Killer);
+	
+	// Ölüm montajları, saldıranın yönüne göre ("Önde" = saldıran karşıda)
+	UPROPERTY(EditDefaultsOnly, Category = "Death")
+	TArray<TObjectPtr<UAnimMontage>> DeathFrontMontages;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Death")
+	TArray<TObjectPtr<UAnimMontage>> DeathBackMontages;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Death")
+	TArray<TObjectPtr<UAnimMontage>> DeathLeftMontages;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Death")
+	TArray<TObjectPtr<UAnimMontage>> DeathRightMontages;
 
 	
 };

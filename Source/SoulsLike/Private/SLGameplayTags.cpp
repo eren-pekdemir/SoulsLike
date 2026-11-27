@@ -17,4 +17,7 @@ namespace SLGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Event_HitReact, "Event.HitReact");
 
 	UE_DEFINE_GAMEPLAY_TAG(Data_Damage, "Data.Damage");
+	
+	UE_DEFINE_GAMEPLAY_TAG(State_HitReact, "State.HitReact");
+	
 }

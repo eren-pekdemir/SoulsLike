@@ -13,6 +13,8 @@ namespace SLGameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Invulnerable);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Window_Cancel);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Dead);
+	
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_HitReact);
 
 	// Yetenek türleri
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Attack);
