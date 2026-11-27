@@ -11,6 +11,7 @@
 class USLAttributeSet;
 class UGameplayAbility;
 class UGameplayEffect;
+class USLCombatComponent;
 
 UCLASS(Abstract)
 class SOULSLIKE_API ASLCharacterBase : public ACharacter, public IAbilitySystemInterface
@@ -22,6 +23,11 @@ public:
 	ASLCharacterBase();
 	
 	virtual bool IsStrafing() const { return false; }
+	
+	UStaticMeshComponent* GetWeaponMesh() const { return WeaponMesh; }
+	
+	virtual void HandleDamage(float Damage, AActor* DamageInstigator);
+	bool IsDead() const;
 
 protected:
 	// Called when the game starts or when spawned
@@ -44,7 +50,10 @@ protected:
 	
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USLCombatComponent> Combat;
 	
+	virtual void Die();
 
-
+	
 };

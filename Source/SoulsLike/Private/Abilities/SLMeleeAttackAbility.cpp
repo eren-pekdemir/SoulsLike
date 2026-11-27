@@ -5,9 +5,11 @@
 #include "SLGameplayTags.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystemGlobals.h"
 #include "Abilities/SLAttributeSet.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "Combat/SLCombatComponent.h"
 
 USLMeleeAttackAbility::USLMeleeAttackAbility()
 {
@@ -20,10 +22,16 @@ void USLMeleeAttackAbility::ActivateAbility(const FGameplayAbilitySpecHandle Han
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	if (ComboMontages.IsEmpty() || !CommitAbility(Handle, ActorInfo, ActivationInfo))
+	if (Steps.IsEmpty() || !CommitAbility(Handle, ActorInfo, ActivationInfo))
 	{
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
+	}
+	
+	USLCombatComponent* CombatComp = GetAvatarActorFromActorInfo()->FindComponentByClass<USLCombatComponent>();
+	if (CombatComp)
+	{
+		WeaponHitHandle = CombatComp->OnWeaponHit.AddUObject(this, &USLMeleeAttackAbility::OnWeaponHit);
 	}
 
 	ComboIndex = 0;
@@ -40,8 +48,24 @@ void USLMeleeAttackAbility::ActivateAbility(const FGameplayAbilitySpecHandle Han
 	HandoffTask->ReadyForActivation();
 }
 
+void USLMeleeAttackAbility::EndAbility(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+	bool bReplicateEndAbility, bool bWasCancelled)
+{
+	if (AActor* Avatar = GetAvatarActorFromActorInfo())
+	{
+		if (USLCombatComponent* CombatComp = Avatar->FindComponentByClass<USLCombatComponent>())
+		{
+			CombatComp->OnWeaponHit.Remove(WeaponHitHandle);
+		}
+	}
+	
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+		
+}
+
 bool USLMeleeAttackAbility::CheckCost(const FGameplayAbilitySpecHandle Handle,
-	const FGameplayAbilityActorInfo* ActorInfo, FGameplayTagContainer* OptionalRelevantTags) const
+                                      const FGameplayAbilityActorInfo* ActorInfo, FGameplayTagContainer* OptionalRelevantTags) const
 {
 	const USLAttributeSet* Set = ActorInfo->AbilitySystemComponent->GetSet<USLAttributeSet>();
 	if (Set && Set->GetStamina() > 0.f)
@@ -61,7 +85,7 @@ void USLMeleeAttackAbility::PlayStep(int32 Index)
 		MontageTask->EndTask();
 	}
 
-	MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, ComboMontages[Index]);
+	MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, Steps[Index].Montage);
 	MontageTask->OnCompleted.AddDynamic(this, &USLMeleeAttackAbility::OnMontageFinished);
 	MontageTask->OnBlendOut.AddDynamic(this, &USLMeleeAttackAbility::OnMontageFinished);
 	MontageTask->OnInterrupted.AddDynamic(this, &USLMeleeAttackAbility::OnMontageFinished);
@@ -77,7 +101,7 @@ void USLMeleeAttackAbility::OnComboInput(FGameplayEventData Payload)
 void USLMeleeAttackAbility::OnHandoff(FGameplayEventData Payload)
 {
 	if (!bNextQueued) return;                                  // tıklama yoksa devam etme
-	if (ComboIndex + 1 >= ComboMontages.Num()) return;         // zincirin sonu
+	if (ComboIndex + 1 >= Steps.Num()) return;         // zincirin sonu
 	if (!CommitAbilityCost(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo)) return;
 
 	ComboIndex++;
@@ -87,5 +111,23 @@ void USLMeleeAttackAbility::OnHandoff(FGameplayEventData Payload)
 void USLMeleeAttackAbility::OnMontageFinished()
 {
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+}
+
+void USLMeleeAttackAbility::OnWeaponHit(AActor* Target, const FHitResult& Hit)
+{
+	UAbilitySystemComponent* TargetASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Target);
+	if (!TargetASC || !DamageEffect) return;
+
+	if (TargetASC->HasMatchingGameplayTag(SLGameplayTags::State_Invulnerable) ||
+		TargetASC->HasMatchingGameplayTag(SLGameplayTags::State_Dead))
+	{
+		return;                                
+	}
+
+	FGameplayEffectSpecHandle Spec = MakeOutgoingGameplayEffectSpec(DamageEffect);
+	Spec.Data->SetSetByCallerMagnitude(SLGameplayTags::Data_Damage, Steps[ComboIndex].Damage);
+
+	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(*Spec.Data.Get(), TargetASC);
+	
 }
 

@@ -9,6 +9,10 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameplayEffect.h"
+#include "SLGameplayTags.h"
+#include "Combat/SLCombatComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 
 // Sets default values
@@ -24,6 +28,22 @@ ASLCharacterBase::ASLCharacterBase()
 	AbilitySystem = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
 	Attributes = CreateDefaultSubobject<USLAttributeSet>(TEXT("Attributes"));
 	
+	Combat = CreateDefaultSubobject<USLCombatComponent>(TEXT("Combat"));
+}
+
+void ASLCharacterBase::HandleDamage(float Damage, AActor* DamageInstigator)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("%s -%.0f (kalan %.0f)"), *GetName(), Damage, Attributes->GetHealth()));
+	
+	if (Attributes->GetHealth() <= 0.0f)
+	{
+		if (!IsDead()) Die();
+	}
+}
+
+bool ASLCharacterBase::IsDead() const
+{
+	return GetAbilitySystemComponent()->HasMatchingGameplayTag(SLGameplayTags::State_Dead);
 }
 
 // Called when the game starts or when spawned
@@ -55,4 +75,13 @@ void ASLCharacterBase::BeginPlay()
 UAbilitySystemComponent* ASLCharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystem;
+}
+
+void ASLCharacterBase::Die()
+{
+	AbilitySystem->AddLooseGameplayTag(SLGameplayTags::State_Dead);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
+	GetMesh()->SetSimulatePhysics(true);
+	GetCharacterMovement()->DisableMovement();
 }
