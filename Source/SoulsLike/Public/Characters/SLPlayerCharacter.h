@@ -45,6 +45,14 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category =  "LockOn", meta = (AllowPrivateAccess = true))
 	TObjectPtr<USLLockOnComponent> LockComponent;
 	
+	void TryActivateOrBuffer(TSubclassOf<UGameplayAbility> Ability);
+
+	UPROPERTY() TSubclassOf<UGameplayAbility> BufferedAbility;
+	float BufferedTime = 0.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	float InputBufferDuration = 0.3f;
+	
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> MoveAction;

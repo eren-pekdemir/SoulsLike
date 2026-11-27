@@ -9,6 +9,7 @@
 USLDodgeAbility::USLDodgeAbility()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	bRetriggerInstancedAbility = true;
 }
 
 void USLDodgeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,

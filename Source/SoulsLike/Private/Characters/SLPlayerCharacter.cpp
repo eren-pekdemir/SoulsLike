@@ -2,6 +2,7 @@
 
 
 #include "Public/Characters/SLPlayerCharacter.h"
+#include "SLGameplayTags.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
@@ -9,6 +10,7 @@
 #include "KismetAnimationLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Combat/SLLockOnComponent.h"
+#include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -55,6 +57,18 @@ void ASLPlayerCharacter::BeginPlay()
 void ASLPlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	if (BufferedAbility)
+	{
+		if (GetWorld()->GetTimeSeconds() - BufferedTime > InputBufferDuration)
+		{
+			BufferedAbility = nullptr;                         
+		}
+		else if (GetAbilitySystemComponent()->TryActivateAbilityByClass(BufferedAbility))
+		{
+			BufferedAbility = nullptr;                         
+		}
+	}
 
 	if (!IsStrafing())
 	{
@@ -70,6 +84,8 @@ void ASLPlayerCharacter::Tick(float DeltaTime)
 		: FMath::GetMappedRangeValueClamped(FVector2f(90.f, 180.f), FVector2f(320.f, 290.f), Direction);
 
 	GetCharacterMovement()->MaxWalkSpeed = Speed;
+	
+	
 }
 
 // Called to bind functionality to input
@@ -119,22 +135,22 @@ void ASLPlayerCharacter::LockOn(const FInputActionValue& Value)
 void ASLPlayerCharacter::LightAttack(const FInputActionValue& Value)
 {
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
-		this, FGameplayTag::RequestGameplayTag(TEXT("Event.Input.LightAttack")), FGameplayEventData());
+		this, SLGameplayTags::Event_Input_LightAttack, FGameplayEventData());
 
-	GetAbilitySystemComponent()->TryActivateAbilityByClass(LightAttackAbility);
+	TryActivateOrBuffer(LightAttackAbility);
 }
 
 void ASLPlayerCharacter::HeavyAttack(const FInputActionValue& Value)
 {
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
-		this, FGameplayTag::RequestGameplayTag(TEXT("Event.Input.HeavyAttack")), FGameplayEventData());
+		this, SLGameplayTags::Event_Input_HeavyAttack, FGameplayEventData());
 
-	GetAbilitySystemComponent()->TryActivateAbilityByClass(HeavyAttackAbility);
+	TryActivateOrBuffer(HeavyAttackAbility);
 }
 
 void ASLPlayerCharacter::Dodge(const FInputActionValue& Value)
 {
-	GetAbilitySystemComponent()->TryActivateAbilityByClass(DodgeAbility);
+	TryActivateOrBuffer(DodgeAbility);
 }
 
 void ASLPlayerCharacter::HandleLockOnChanged(AActor* NewTarget)
@@ -146,3 +162,14 @@ void ASLPlayerCharacter::HandleLockOnChanged(AActor* NewTarget)
 	GetCharacterMovement()->bUseControllerDesiredRotation = bLocked;
 }
 
+void ASLPlayerCharacter::TryActivateOrBuffer(TSubclassOf<UGameplayAbility> Ability)
+{
+	if (GetAbilitySystemComponent()->TryActivateAbilityByClass(Ability))
+	{
+		BufferedAbility = nullptr;
+		return;
+	}
+	
+	BufferedAbility = Ability;
+	BufferedTime = GetWorld()->GetTimeSeconds();
+}

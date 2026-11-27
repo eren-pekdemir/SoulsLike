@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/GameplayAbility.h"
+#include "SLGameplayAbility.h"
 #include "SLMeleeAttackAbility.generated.h"
 
 class UAbilityTask_PlayMontageAndWait;
 
 UCLASS()
-class SOULSLIKE_API USLMeleeAttackAbility : public UGameplayAbility
+class SOULSLIKE_API USLMeleeAttackAbility : public USLGameplayAbility
 {
 	GENERATED_BODY()
 public:

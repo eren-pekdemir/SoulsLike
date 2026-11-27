@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/GameplayAbility.h"
+#include "SLGameplayAbility.h"
 #include "SLDodgeAbility.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SOULSLIKE_API USLDodgeAbility : public UGameplayAbility
+class SOULSLIKE_API USLDodgeAbility : public USLGameplayAbility
 {
 	GENERATED_BODY()
 public:

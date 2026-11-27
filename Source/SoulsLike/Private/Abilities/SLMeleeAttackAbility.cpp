@@ -2,6 +2,7 @@
 
 
 #include "Abilities/SLMeleeAttackAbility.h"
+#include "SLGameplayTags.h"
 
 #include "AbilitySystemComponent.h"
 #include "Abilities/SLAttributeSet.h"
@@ -34,7 +35,7 @@ void USLMeleeAttackAbility::ActivateAbility(const FGameplayAbilitySpecHandle Han
 	InputTask->ReadyForActivation();
 
 	UAbilityTask_WaitGameplayEvent* HandoffTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
-		this, FGameplayTag::RequestGameplayTag(TEXT("Event.Combo.Handoff")));
+		this, SLGameplayTags::Event_Combo_Handoff);
 	HandoffTask->EventReceived.AddDynamic(this, &USLMeleeAttackAbility::OnHandoff);
 	HandoffTask->ReadyForActivation();
 }
