@@ -86,6 +86,7 @@ void ASLPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EIC->BindAction(LockOnAction, ETriggerEvent::Started, this, &ASLPlayerCharacter::LockOn);
 		EIC->BindAction(LightAttackAction, ETriggerEvent::Started, this, &ASLPlayerCharacter::LightAttack);
 		EIC->BindAction(HeavyAttackAction, ETriggerEvent::Started, this, &ASLPlayerCharacter::HeavyAttack);
+		EIC->BindAction(DodgeAction, ETriggerEvent::Started, this, &ASLPlayerCharacter::Dodge);
 	}
 }
 
@@ -129,6 +130,11 @@ void ASLPlayerCharacter::HeavyAttack(const FInputActionValue& Value)
 		this, FGameplayTag::RequestGameplayTag(TEXT("Event.Input.HeavyAttack")), FGameplayEventData());
 
 	GetAbilitySystemComponent()->TryActivateAbilityByClass(HeavyAttackAbility);
+}
+
+void ASLPlayerCharacter::Dodge(const FInputActionValue& Value)
+{
+	GetAbilitySystemComponent()->TryActivateAbilityByClass(DodgeAbility);
 }
 
 void ASLPlayerCharacter::HandleLockOnChanged(AActor* NewTarget)
